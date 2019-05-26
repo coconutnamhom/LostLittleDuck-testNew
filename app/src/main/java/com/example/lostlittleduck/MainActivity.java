@@ -16,6 +16,7 @@ import com.example.lostlittleduck.adapter.ViewPagerAdapter;
 import com.example.lostlittleduck.fragment.ConnectedBLEFragment;
 import com.example.lostlittleduck.fragment.ScanBLEFragment;
 import com.example.lostlittleduck.fragment.notiFragment;
+import com.example.lostlittleduck.service.AwesomeJobIntentService;
 import com.example.lostlittleduck.service.ExampleService;
 
 import java.util.List;
@@ -45,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
 //        tabLayout.getTabAt(2)    .setIcon(R.drawable.noti);
 
         View rootView = getWindow().getDecorView().getRootView();
-        startService(rootView);
+//        startService(rootView);
+        startJobIntentService(rootView);
 
         String menuFragment = getIntent().getStringExtra("menuFragment");
         if (menuFragment != null) {
@@ -87,8 +89,15 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, ExampleService.class);
         serviceIntent.putExtra("inputExtra", "start");
 
-
         ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    public void startJobIntentService(View v) {
+
+        Intent mIntent = new Intent(this, AwesomeJobIntentService.class);
+//        mIntent.putExtra("maxCountValue", 1000);
+        AwesomeJobIntentService.enqueueWork(this, mIntent);
+
     }
 
 }

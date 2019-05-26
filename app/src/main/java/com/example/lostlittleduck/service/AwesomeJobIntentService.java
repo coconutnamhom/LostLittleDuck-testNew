@@ -1,26 +1,21 @@
 package com.example.lostlittleduck.service;
 
+
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import android.provider.DocumentsContract;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
-
-import com.clj.fastble.callback.BleNotifyCallback;
-import com.example.lostlittleduck.R;
 
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleRssiCallback;
@@ -35,9 +30,10 @@ import java.util.List;
 
 import static com.example.lostlittleduck.App.CHANNEL_ID;
 
-public class ExampleService extends Service {
+public class AwesomeJobIntentService extends JobIntentService {
+    final Handler mHandler = new Handler();
 
-    String input;
+    Handler handler = new Handler(); String input;
     final String UUID_SERVICE = "0000ffe0-0000-1000-8000-00805f9b34fb";
     final String UUID_WRITE = "0000ffe1-0000-1000-8000-00805f9b34fb";
     final String UUID_READ = "0000ffe1-0000-1000-8000-00805f9b34fb";
@@ -49,15 +45,46 @@ public class ExampleService extends Service {
     ArrayList<Integer> rssilist = new ArrayList<Integer>();
     int count = 0, avgrssi, total;
 
+    private static final String TAG = "MyJobIntentService";
+    /**
+     * Unique job ID for this service.
+     */
+    private static final int JOB_ID = 2;
 
+    public static void enqueueWork(Context context, Intent intent) {
+        enqueueWork(context, AwesomeJobIntentService.class, JOB_ID, intent);
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        showToast("Job Execution Started");
+        handler.post(periodicUpdate);
+    }
+
+    @Override
+    protected void onHandleWork(@NonNull Intent intent) {
+
 
     }
 
-    Handler handler = new Handler();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        showToast("Job Execution Finished");
+    }
+
+
+    // Helper for showing tests
+    void showToast(final CharSequence text) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(AwesomeJobIntentService.this, text, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private Runnable periodicUpdate = new Runnable() {
         @Override
         public void run() {
@@ -67,7 +94,6 @@ public class ExampleService extends Service {
 
             List<BleDevice> deviceConnectedList = BleManager.getInstance().getAllConnectedDevice();
             String noti_text = "";
-
             if (deviceConnectedList != null) {
                 if (deviceConnectedList.size() > 0) {
 
@@ -154,9 +180,6 @@ public class ExampleService extends Service {
                                         }
                                     });
 
-
-//                            noti(noti_text);
-
                         } else if (distance > 5) {
                             noti_num_3++;
                             noti_text = bleDevice.getRssi() + " " + String.format("%.2f", distance) + noti_text + noti_num_3 + " Device : Distance " + NOTI_3 + "\n";
@@ -178,8 +201,6 @@ public class ExampleService extends Service {
                                             /*Toast.makeText(ExampleService.this,exception.toString(), Toast.LENGTH_SHORT).show();*/
                                         }
                                     });
-//                            noti(noti_text);
-
 
                         }
 
@@ -190,35 +211,12 @@ public class ExampleService extends Service {
             } else {
 //                noti_text = "No Device is Connected";
             }
-
-                noti(noti_text);
+            if(noti_text!=""){
+                startNotiService(noti_text);
+            }
 
         }
     };
-
-    @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
-        input = intent.getStringExtra("inputExtra");
-
-        //stopSelf();
-        handler.post(periodicUpdate);
-
-        return START_NOT_STICKY;
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
 
     private Double calculateDistance(BleDevice bleDevice) {
 
@@ -250,34 +248,14 @@ public class ExampleService extends Service {
             return distance;
         }
     }
-    private void noti(String noti_text){
 
-        Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
-        notificationIntent.putExtra("menuFragment", "notiFragment");
-        PendingIntent pendingIntent = PendingIntent.getActivity(ExampleService.this,
-                0, notificationIntent, 0);
+    public void startNotiService(String noti_text) {
 
+        Intent serviceIntent = new Intent(this, NotiService.class);
+        serviceIntent.putExtra("noti_text", noti_text);
 
-        Notification notification = new NotificationCompat.Builder(ExampleService.this, CHANNEL_ID)
-                .setContentTitle("Notification")
-                .setContentText(noti_text)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentIntent(pendingIntent)
-                .build();
-
-//        notification.priority = Notification.PRIORITY_MIN;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            stopForeground(true);
-        } else {
-            stopSelf();
-        }
-
-        if(noti_text!="") {
-            startForeground(1, notification);
-        }else {
-            startForeground(15, notification);
-        }
-
+        ContextCompat.startForegroundService(this, serviceIntent);
     }
+
+
 }

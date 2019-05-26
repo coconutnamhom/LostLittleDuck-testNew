@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -31,6 +32,10 @@
 
         </activity>
         <service android:name=".service.ExampleService" />
+        <service android:name=".service.NotiService" />
+        <service
+            android:name=".service.AwesomeJobIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 
