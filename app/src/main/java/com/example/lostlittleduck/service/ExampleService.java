@@ -35,7 +35,6 @@ import java.util.List;
 
 import static com.example.lostlittleduck.App.CHANNEL_ID;
 
-//public class ExampleService extends Service implements SensorEventListener {
 public class ExampleService extends Service {
 
     String input;
@@ -50,37 +49,12 @@ public class ExampleService extends Service {
     ArrayList<Integer> rssilist = new ArrayList<Integer>();
     int count = 0, avgrssi, total;
 
-    /*private Double orientBle = -1.0;
-    int mAzimuth,A;
-    private SensorManager mSensorManager;
-    private Sensor mRotationV, mAccelerometer, mMagnetometer;
-    boolean haveSensor = false, haveSensor2 = false;
-    float[] rMat = new float[9];
-    float[] orientation = new float[3];
-    private float[] mLastAccelerometer = new float[3];
-    private float[] mLastMagnetometer = new float[3];
-    private boolean mLastAccelerometerSet = false;
-    private boolean mLastMagnetometerSet = false;*/
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-       /* mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) == null) {
-            if ((mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) == null) || (mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) == null)) {
-                noSensorsAlert();
-            }
-            else {
-                mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-                haveSensor = mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
-                haveSensor2 = mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_UI);
-            }
-        }
-        else{
-            mRotationV = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-            haveSensor = mSensorManager.registerListener(this, mRotationV, SensorManager.SENSOR_DELAY_UI);
-        }*/
+
     }
 
     Handler handler = new Handler();
@@ -137,7 +111,7 @@ public class ExampleService extends Service {
 
                         if (distance >= 0 && distance < 3) {
                             noti_num_1++;
-                            noti_text = bleDevice.getRssi() + " " + String.format("%.2f", distance) + " " + noti_text + noti_num_1 + " Device : Distance " + NOTI_1 + "\n";
+//                            noti_text = bleDevice.getRssi() + " " + String.format("%.2f", distance) + " " + noti_text + noti_num_1 + " Device : Distance " + NOTI_1 + "\n";
                             //write
                             BleManager.getInstance().write(
                                     device,
@@ -158,31 +132,6 @@ public class ExampleService extends Service {
                                         }
                                     });
 
-                           /* BleManager.getInstance().notify(
-                                    bleDevice,
-                                    UUID_SERVICE,
-                                    UUID_NOTIFY,
-                                    new BleNotifyCallback() {
-                                        @Override
-                                        public void onNotifySuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onNotifyFailure(BleException exception) {
-                                            //point.setText(exception.toString());
-                                        }
-
-                                        @RequiresApi(api = Build.VERSION_CODES.O)
-                                        @Override
-                                        public void onCharacteristicChanged(byte[] data) {
-
-                                            if(data.length > 1){
-                                                String orientBle_ = (new String(data)).replaceAll("([A-Za-z\\t\\r\\n\\v\\f])", "");
-                                                orientBle =  Double.parseDouble(orientBle_);
-                                            }
-                                        }
-                                    });*/
                         } else if (distance >= 3 && distance < 5) {
                             noti_num_2++;
                             noti_text = bleDevice.getRssi() + " " + String.format("%.2f", distance) + " " + noti_text + noti_num_2 + " Device : Distance " + NOTI_2 + "\n";
@@ -205,43 +154,8 @@ public class ExampleService extends Service {
                                         }
                                     });
 
-                           /* BleManager.getInstance().notify(
-                                    bleDevice,
-                                    UUID_SERVICE,
-                                    UUID_NOTIFY,
-                                    new BleNotifyCallback() {
-                                        @Override
-                                        public void onNotifySuccess() {
 
-                                        }
-
-                                        @Override
-                                        public void onNotifyFailure(BleException exception) {
-                                            //point.setText(exception.toString());
-                                        }
-
-                                        @RequiresApi(api = Build.VERSION_CODES.O)
-                                        @Override
-                                        public void onCharacteristicChanged(byte[] data) {
-
-                                            if(data.length > 1){
-                                                String orientBle_ = (new String(data)).replaceAll("([A-Za-z\\t\\r\\n\\v\\f])", "");
-                                                orientBle =  Double.parseDouble(orientBle_);
-                                            }
-                                        }
-                                    });*/
-                            Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
-                            notificationIntent.putExtra("menuFragment", "notiFragment");
-                            PendingIntent pendingIntent = PendingIntent.getActivity(ExampleService.this,
-                                    0, notificationIntent, 0);
-
-
-                            Notification notification = new NotificationCompat.Builder(ExampleService.this, CHANNEL_ID)
-                                    .setContentTitle("Notification")
-                                    .setContentText(noti_text)
-                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                    .setContentIntent(pendingIntent)
-                                    .build();
+//                            noti(noti_text);
 
                         } else if (distance > 5) {
                             noti_num_3++;
@@ -264,68 +178,22 @@ public class ExampleService extends Service {
                                             /*Toast.makeText(ExampleService.this,exception.toString(), Toast.LENGTH_SHORT).show();*/
                                         }
                                     });
-                            Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
-                            notificationIntent.putExtra("menuFragment", "notiFragment");
-                            PendingIntent pendingIntent = PendingIntent.getActivity(ExampleService.this,
-                                    0, notificationIntent, 0);
+//                            noti(noti_text);
 
 
-                            /*BleManager.getInstance().notify(
-                                    bleDevice,
-                                    UUID_SERVICE,
-                                    UUID_NOTIFY,
-                                    new BleNotifyCallback() {
-                                        @Override
-                                        public void onNotifySuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onNotifyFailure(BleException exception) {
-                                            //point.setText(exception.toString());
-                                        }
-
-                                        @RequiresApi(api = Build.VERSION_CODES.O)
-                                        @Override
-                                        public void onCharacteristicChanged(byte[] data) {
-
-                                            if(data.length > 1){
-                                                String orientBle_ = (new String(data)).replaceAll("([A-Za-z\\t\\r\\n\\v\\f])", "");
-                                                orientBle =  Double.parseDouble(orientBle_);
-                                            }
-                                        }
-                                    });*/
                         }
 
                     }
                 } else {
-                    noti_text = "No Device is Connected";
+//                     noti_text = "No Device is Connected";
                 }
             } else {
-                noti_text = "No Device is Connected";
+//                noti_text = "No Device is Connected";
             }
 
-
-            Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
-            notificationIntent.putExtra("menuFragment", "notiFragment");
-            PendingIntent pendingIntent = PendingIntent.getActivity(ExampleService.this,
-                    0, notificationIntent, 0);
-
-
-            Notification notification = new NotificationCompat.Builder(ExampleService.this, CHANNEL_ID)
-                    .setContentTitle("Notification")
-                    .setContentText(noti_text)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentIntent(pendingIntent)
-                    .build();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopForeground(true);
-            } else {
-                stopSelf();
+            if(noti_text != "") {
+                noti(noti_text);
             }
-
-            startForeground(1, notification);
 
         }
     };
@@ -344,15 +212,7 @@ public class ExampleService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        /*if(haveSensor && haveSensor2){
-            mSensorManager.unregisterListener(this,mAccelerometer);
-            mSensorManager.unregisterListener(this,mMagnetometer);
-        }
-        else{
-            if(haveSensor)
-                mSensorManager.unregisterListener(this,mRotationV);
-        }*/
-        //BleManager.getInstance().stopNotify(bleDevice,UUID_SERVICE, UUID_NOTIFY);
+
     }
 
     @Nullable
@@ -361,43 +221,6 @@ public class ExampleService extends Service {
         return null;
     }
 
-   /* @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            SensorManager.getRotationMatrixFromVector(rMat, event.values);
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
-        }
-
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
-            mLastAccelerometerSet = true;
-        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
-            mLastMagnetometerSet = true;
-        }
-        if (mLastAccelerometerSet && mLastMagnetometerSet) {
-            SensorManager.getRotationMatrix(rMat, null, mLastAccelerometer, mLastMagnetometer);
-            SensorManager.getOrientation(rMat, orientation);
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
-        }
-
-        mAzimuth = Math.round(mAzimuth);
-        A=mAzimuth-90; //setให้เด็กหันหน้าไปทิศ90เสมอ
-        if(A<0){
-            A+=360;
-        }
-        //direc.setRotation(-A);
-
-        if(orientBle != -1){
-            int orientationDiff = calculate_orientation(mAzimuth, (int) Math.round(orientBle));
-        }
-
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }*/
 
     private Double calculateDistance(BleDevice bleDevice) {
 
@@ -428,5 +251,29 @@ public class ExampleService extends Service {
             double distance = 7.00;
             return distance;
         }
+    }
+    private void noti(String noti_text){
+
+        Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
+        notificationIntent.putExtra("menuFragment", "notiFragment");
+        PendingIntent pendingIntent = PendingIntent.getActivity(ExampleService.this,
+                0, notificationIntent, 0);
+
+
+        Notification notification = new NotificationCompat.Builder(ExampleService.this, CHANNEL_ID)
+                .setContentTitle("Notification")
+                .setContentText(noti_text)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            stopForeground(true);
+        } else {
+            stopSelf();
+        }
+
+//        startForeground(1, notification);
+
     }
 }

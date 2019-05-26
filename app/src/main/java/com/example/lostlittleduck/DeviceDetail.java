@@ -333,7 +333,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 
         int zeta_app = 0;
         Double distanceOld;
-       Boolean isFirstTime = sharedPreferences.getBoolean("isFirstTime", true); //ควรไว้ตรงไหน?
+        Boolean isFirstTime = sharedPreferences.getBoolean("isFirstTime", true); //ควรไว้ตรงไหน?
         if (distance > SAFEZONE_DISTANCE) {
             editor.putInt("orientationMobileOld", orientationMobile);
             int orientationMobileOld = sharedPreferences.getInt("orientationMobileOld", -1);
