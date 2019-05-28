@@ -50,7 +50,6 @@ public class ExampleService extends Service {
     int count = 0, avgrssi, total;
 
 
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -61,7 +60,7 @@ public class ExampleService extends Service {
     private Runnable periodicUpdate = new Runnable() {
         @Override
         public void run() {
-            handler.postDelayed(periodicUpdate, 10 * 1000 - SystemClock.elapsedRealtime() % 1000);
+            handler.postDelayed(periodicUpdate, 1 * 1000 - SystemClock.elapsedRealtime() % 1000);
             // whatever you want to do below
             //Toast. makeText(ExampleService.this,"10 second" , Toast.LENGTH_SHORT).show();
 
@@ -93,11 +92,11 @@ public class ExampleService extends Service {
                                         bleDevice.setRssi(rssi);
                                         rssilist.add(rssi);
                                         count += 1;
-                                        if (count >= 15) {
+                                        if (count >= 8) {
                                             total = 0;
-                                            for (int i = 0; i < 15; i++) {
+                                            for (int i = 0; i < 8; i++) {
                                                 total += rssilist.get(i);
-                                                avgrssi = total / 15;
+                                                avgrssi = total / 8;
 
                                             }
                                             bleDevice.setRssi(avgrssi);
@@ -190,8 +189,12 @@ public class ExampleService extends Service {
             } else {
 //                noti_text = "No Device is Connected";
             }
-
-                noti(noti_text);
+//
+//<<<<<<< Updated upstream
+            noti(noti_text);
+//=======
+            noti(noti_text);
+//>>>>>>> Stashed changes
 
         }
     };
@@ -222,34 +225,46 @@ public class ExampleService extends Service {
 
     private Double calculateDistance(BleDevice bleDevice) {
 
-//        int MeasurePower = -69; //hard coded power value. Usually ranges between -59 to -65
+
+        int MeasurePower = -55; //hard coded power value. Usually ranges between -59 to -65
         int rssi = bleDevice.getRssi();
-        if(rssi > -65){
-            double distance = 0.00;
-            return distance;
-        } else if (rssi > -70 && rssi <= -65) {
-            double distance = 1.00;
-            return distance;
-        } else if (rssi > -74 && rssi <= -70) {
-            double distance = 2.00;
-            return distance;
-        }else if (rssi > -77 && rssi <= -74) {
-            double distance = 3.00;
-            return distance;
-        }else if (rssi > -80 && rssi <= -77) {
-            double distance = 4.00;
-            return distance;
-        }else if (rssi > -83 && rssi <= -80) {
-            double distance = 5.00;
-            return distance;
-        }else if (rssi > -87 && rssi <= 83) {
-            double distance = 6.00;
-            return distance;
-        }else {
-            double distance = 7.00;
-            return distance;
+
+        if (rssi == 0) {
+            return -1.0;
         }
+        Double ratio = (MeasurePower - rssi) / 20.00;
+        Double distance = Math.pow(10, ratio);
+        return distance;
+//        int MeasurePower = -69; //hard coded power value. Usually ranges between -59 to -65
+//        int rssi = bleDevice.getRssi();
+//        if(rssi > -65){
+//            double distance = 0.00;
+//            return distance;
+//        } else if (rssi > -70 && rssi <= -65) {
+//            double distance = 1.00;
+//            return distance;
+//        } else if (rssi > -74 && rssi <= -70) {
+//            double distance = 2.00;
+//            return distance;
+//        }else if (rssi > -77 && rssi <= -74) {
+//            double distance = 3.00;
+//            return distance;
+//        }else if (rssi > -80 && rssi <= -77) {
+//            double distance = 4.00;
+//            return distance;
+//        }else if (rssi > -83 && rssi <= -80) {
+//            double distance = 5.00;
+//            return distance;
+//        }else if (rssi > -87 && rssi <= 83) {
+//            double distance = 6.00;
+//            return distance;
+//        }else {
+//            double distance = 7.00;
+//            return distance;
+//        }
     }
+
+
     private void noti(String noti_text){
 
         Intent notificationIntent = new Intent(ExampleService.this, MainActivity.class);
@@ -265,7 +280,11 @@ public class ExampleService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
 
+//<<<<<<< Updated upstream
 //        notification.priority = Notification.PRIORITY_MIN;
+//=======
+        notification.priority = Notification.PRIORITY_MIN;
+//>>>>>>> Stashed changes
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             stopForeground(true);
