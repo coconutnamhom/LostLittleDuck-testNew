@@ -36,7 +36,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
     private TextView distance;
     private ImageView direc;
 
-    int mAzimuth,A;
+    int mAzimuth,Q;
     private SensorManager mSensorManager;
     private Sensor mRotationV, mAccelerometer, mMagnetometer;
     boolean haveSensor = false, haveSensor2 = false;
@@ -62,7 +62,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
     private Double distanceApp = 0.0;
 
     final String SHARED_PREFERENCES_FILE_NAME = "orientation";
-    final int SAFEZONE_DISTANCE = 3;
+    final int SAFEZONE_DISTANCE = 0;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -87,7 +87,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
         sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        editor.putBoolean("isSafeZone",true);
+        editor.putBoolean("isFirstTime",true);
         editor.apply();
     }
 
@@ -103,6 +103,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 //        int point_ = calculate_point(bleDevice);
 
         distance = (TextView) findViewById(R.id.distance);
+
 
     }
 
@@ -183,8 +184,8 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 
                                 if(data.length > 2){
 //                                    point.setText(new String(data));
-//                                    String orientBle_ = (new String(data)).replaceAll("([A-Za-z\\t\\r\\n\\v\\f])", "");
-//                                    orientBle =  Double.parseDouble(orientBle_);
+                                    String orientBle_ = (new String(data)).replaceAll("([A-Za-z\\t\\r\\n\\v\\f])", "");
+                                    orientBle =  Double.parseDouble(orientBle_);
                                 }
                             }
                         });
@@ -193,21 +194,39 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                     DeviceDetail.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int orientationDiff = calculate_orientation(mAzimuth, (int) Math.round(orientBle),distanceApp);
-//                            point.setText(Integer.toString(orientationDiff));
+                            int zeta_app = calculate_orientation(mAzimuth, (int) Math.round(orientBle),distanceApp);
+                            zeta_app = zeta_app;
 
 //                            A = orientationDiff;
 //                            if(A<0){
 //                                A+=360;
 //                            }
-                            A=0;
-                            direc.setRotation(-A);
+
+
+                            if (zeta_app >= 337.5 && zeta_app < 360 || zeta_app >= 0 && zeta_app < 22.5) {
+//            A = 0;
+                            } else if (zeta_app >= 22.5 && zeta_app < 67.5) {
+                                Q = 45;
+                            } else if (zeta_app >= 67.5 && zeta_app < 112.5) {
+                                Q = 90;
+                            } else if (zeta_app >= 112.5 && zeta_app < 157.5) {
+                                Q = 135;
+                            } else if (zeta_app >= 157.5 && zeta_app < 202.5) {
+                                Q = 180;
+                            }else if(zeta_app >= 202.5 && zeta_app < 247.5 ) {
+                                Q = 225;
+                            }else if(zeta_app >= 247.5 && zeta_app < 292.5 ) {
+                                Q = 270;
+                            }else  {
+                                Q = 315;
+                            }
+                            direc.setRotation(Q);
                         }
                     });
                 }
 
             }
-        }, 0, 2000);   // 1000 Millisecond  = 1 second
+        }, 0, 1000);   // 1000 Millisecond  = 1 second
     }
 //
 //   private int calculate_point(BleDevice bleDevice){
@@ -218,12 +237,13 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
     private Double calculate_distance(BleDevice bleDevice){
 //        int MeasurePower = -69; //hard coded power value. Usually ranges between -59 to -65
 //        int rssi = bleDevice.getRssi();
-//
+
 //        if (rssi == 0) {
 //            return -1.0;
 //        }
 //        Double ratio = (MeasurePower - rssi) / 20.00;
 //        Double distance = Math.pow(10, ratio);
+//        return distance;
         int rssi = bleDevice.getRssi();
         if(rssi > -65){
             double distance = 0.00;
@@ -231,10 +251,10 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
         } else if (rssi > -70 && rssi <= -65) {
             double distance = 1.00;
                 return distance;
-        } else if (rssi > -74 && rssi <= -70) {
+        } else if (rssi > -73 && rssi <= -70) {
             double distance = 2.00;
                 return distance;
-        }else if (rssi > -77 && rssi <= -74) {
+        }else if (rssi > -77 && rssi <= -73) {
             double distance = 3.00;
                 return distance;
         }else if (rssi > -80 && rssi <= -77) {
@@ -250,7 +270,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
             double distance = 7.00;
                 return distance;
         }
-    }
+  }
 
 //    private int calculate_orientation(int orientationMobile,int orientationBLE, Double distance){
 //
@@ -258,19 +278,19 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 //
 //        Boolean isSafeZone = sharedPreferences.getBoolean("isSafeZone",true);
 //
-//        distance = 7.0;
-//        Double distanceOld = 5.0;
-//
-//        orientationMobile = 0;
-//        orientationBLE = 120;
+////        distance = 7.0;
+////        Double distanceOld = 5.0;
+////
+////        orientationMobile = 0;
+////        orientationBLE = 120;
 //
 //        if(distance > SAFEZONE_DISTANCE){
 //
 //            if(isSafeZone){
 //                int zetaDiffOld = orientationBLE - orientationMobile;
-////                Double distanceOld = distance;
+//                Double distanceOld = distance;
 //
-////                editor.putInt("zetaDiffOld",zetaDiffOld);
+//                editor.putInt("zetaDiffOld",zetaDiffOld);
 //                editor.putInt("zetaDiffOld",90);
 //                //editor.putLong("distanceOld", Double.doubleToRawLongBits(distanceOld));
 //                editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
@@ -278,10 +298,10 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 ////                editor.apply();
 //            }
 //            else{
-//                //int orientationBleOld = sharedPreferences.getInt("orientationBleOld",-1);
-//                int orientationBleOld = 90;
+//                int orientationBleOld = sharedPreferences.getInt("orientationBleOld",-1);
+////                int orientationBleOld = 90;
 //                int zetaDiffOld = sharedPreferences.getInt("zetaDiffOld",-1);
-//                //Double distanceOld = Double.longBitsToDouble(sharedPreferences.getLong("distanceOld", Double.doubleToLongBits(0)));
+//                Double distanceOld = Double.longBitsToDouble(sharedPreferences.getLong("distanceOld", Double.doubleToLongBits(0)));
 //
 //                if(orientationBLE > orientationBleOld){
 //                    if(distanceOld < distance){
@@ -331,12 +351,13 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 
     private int calculate_orientation(int orientationMobile, int orientationBLE, Double distance) {
 
-        int zeta_app = 0;
+        int zeta_app =0;
         Double distanceOld;
-        Boolean isFirstTime = sharedPreferences.getBoolean("isFirstTime", true); //ควรไว้ตรงไหน?
+        Boolean isFirstTime = sharedPreferences.getBoolean("isFirstTime",true); //ควรไว้ตรงไหน?
         if (distance > SAFEZONE_DISTANCE) {
             editor.putInt("orientationMobileOld", orientationMobile);
-            int orientationMobileOld = sharedPreferences.getInt("orientationMobileOld", -1);
+            editor.apply();
+            int orientationMobileOld = sharedPreferences.getInt("orientationMobileOld", 0);//ค่าเพี้ยน
 
             distanceOld = distance;
 
@@ -344,17 +365,21 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                 int zetaOld = Math.abs(orientationBLE - orientationMobileOld);
                 zetaOld = 360 - zetaOld;
                 editor.putInt("zetaOld", zetaOld);
+                editor.apply();
             } else {
                 int zetaOld = Math.abs(orientationBLE - orientationMobileOld);
                 editor.putInt("zetaOld", zetaOld);
+                editor.apply();
             }
 
             editor.putLong("distanceOld", Double.doubleToRawLongBits(distanceOld));
+            editor.apply();
 
             if (distance >= distanceOld) {
                 if (isFirstTime) {
                     int zetaOld = sharedPreferences.getInt("zetaOld", -1);
-                    if (orientationMobile < (orientationMobileOld - 180) && (orientationBLE-30) < orientationMobile || orientationMobile < (orientationBLE+30)) {
+                    int A = orientationMobileOld - 180,B=orientationBLE-30,C=orientationBLE+30;
+                    if (orientationMobile < A && B < orientationMobile || orientationMobile < C) {
                         int orientationMobileOld_2 = orientationMobileOld - 180;
                         int zetaNew = Math.abs(orientationBLE - orientationMobileOld_2);
                         int zetaAvg = Math.abs((zetaOld + zetaNew) / 2);
@@ -368,9 +393,10 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                         editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                         editor.putInt("orientationMobileOld", orientationMobile);
                         editor.putBoolean("isFirstTime",false);
+                        editor.apply();
                         return zeta_app;
 
-                    } else if ((orientationBLE-30) < orientationMobile || orientationMobile < (orientationBLE+30))
+                    } else if (B < orientationMobile || orientationMobile < C)
                     {
                         int zetaNew = Math.abs(orientationBLE - orientationMobileOld);
                         int zetaAvg = Math.abs((zetaOld + zetaNew) / 2);
@@ -383,6 +409,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                         editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                         editor.putInt("orientationMobileOld", orientationMobile);
                         editor.putBoolean("isFirstTime",false);
+                        editor.apply();
                         return zeta_app;
 
                     } else {
@@ -391,6 +418,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                         editor.putInt("orientationMobileOld", orientationMobile);
                         editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                         editor.putBoolean("isFirstTime",false);
+                        editor.apply();
                         return zeta_app;
                     }
 
@@ -409,6 +437,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
 
                         editor.putInt("zetaAvg", zetaAvg);
                         editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
+                        editor.apply();
                         return zeta_app;
                     } else if ((zetaAvg-30) < orientationMobile || orientationMobile < (zetaAvg+30)){
                         int zetaOld = zetaAvg - orientationMobileOld;
@@ -422,6 +451,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                             editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                             editor.putInt("orientationMobileOld", orientationMobile);
                             editor.putBoolean("isFirstTime",false);
+                            editor.apply();
                             return zeta_app;
                         }
 
@@ -431,6 +461,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                         editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                         editor.putInt("orientationMobileOld", orientationMobile);
                         editor.putBoolean("isFirstTime",false);
+                        editor.apply();
                         return zeta_app;
                     }
 
@@ -446,6 +477,7 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
                     editor.putInt("orientationMobileOld", orientationMobile);
                     editor.putLong("distanceOld", Double.doubleToRawLongBits(distance));
                     editor.putBoolean("isFirstTime",false);
+                    editor.apply();
                     return zeta_app;
                 }
             }
@@ -477,25 +509,25 @@ public class DeviceDetail extends AppCompatActivity implements SensorEventListen
         }
 
         mAzimuth = Math.round(mAzimuth);
-        int zeta_app=30; //ยังไม่ได้ดึงค่า
-        if (zeta_app >= 337.5 && zeta_app < 360 || zeta_app >= 0 && zeta_app < 22.5) {
-            A = 0;
-        } else if (zeta_app >= 22.5 && zeta_app < 67.5) {
-            A = 45;
-        } else if (zeta_app >= 67.5 && zeta_app < 112.5) {
-            A = 90;
-        } else if (zeta_app >= 112.5 && zeta_app < 157.5) {
-            A = 135;
-        } else if (zeta_app >= 157.5 && zeta_app < 202.5) {
-            A = 180;
-        }else if(zeta_app >= 202.5 && zeta_app < 247.5 ) {
-            A = 225;
-        }else if(zeta_app >= 247.5 && zeta_app < 292.5 ) {
-            A = 270;
-        }else  {
-            A = 315;
-        }
-        direc.setRotation(-A);
+//        int zeta_app=30; //ยังไม่ได้ดึงค่า
+//        if (zeta_app >= 337.5 && zeta_app < 360 || zeta_app >= 0 && zeta_app < 22.5) {
+////            A = 0;
+//        } else if (zeta_app >= 22.5 && zeta_app < 67.5) {
+//            A = 45;
+//        } else if (zeta_app >= 67.5 && zeta_app < 112.5) {
+//            A = 90;
+//        } else if (zeta_app >= 112.5 && zeta_app < 157.5) {
+//            A = 135;
+//        } else if (zeta_app >= 157.5 && zeta_app < 202.5) {
+//            A = 180;
+//        }else if(zeta_app >= 202.5 && zeta_app < 247.5 ) {
+//            A = 225;
+//        }else if(zeta_app >= 247.5 && zeta_app < 292.5 ) {
+//            A = 270;
+//        }else  {
+//            A = 315;
+//        }
+//        direc.setRotation(-A);
     }
 
     @Override
