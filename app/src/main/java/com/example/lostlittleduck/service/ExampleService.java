@@ -92,11 +92,11 @@ public class ExampleService extends Service {
                                         bleDevice.setRssi(rssi);
                                         rssilist.add(rssi);
                                         count += 1;
-                                        if (count >= 8) {
+                                        if (count >= 12) {
                                             total = 0;
-                                            for (int i = 0; i < 8; i++) {
+                                            for (int i = 0; i < 12; i++) {
                                                 total += rssilist.get(i);
-                                                avgrssi = total / 8;
+                                                avgrssi = total / 12;
 
                                             }
                                             bleDevice.setRssi(avgrssi);
@@ -132,6 +132,7 @@ public class ExampleService extends Service {
                                     });
 
                         } else if (distance >= 3 && distance < 5) {
+
                             noti_num_2++;
                             noti_text = bleDevice.getRssi() + " " + String.format("%.2f", distance) + " " + noti_text + noti_num_2 + " Device : Distance " + NOTI_2 + "\n";
                             BleManager.getInstance().write(
@@ -195,8 +196,8 @@ public class ExampleService extends Service {
 //=======
             noti(noti_text);
 //>>>>>>> Stashed changes
-
         }
+
     };
 
     @Override
@@ -226,7 +227,7 @@ public class ExampleService extends Service {
     private Double calculateDistance(BleDevice bleDevice) {
 
 
-        int MeasurePower = -55; //hard coded power value. Usually ranges between -59 to -65
+        int MeasurePower = -60; //hard coded power value. Usually ranges between -59 to -65
         int rssi = bleDevice.getRssi();
 
         if (rssi == 0) {
@@ -235,34 +236,35 @@ public class ExampleService extends Service {
         Double ratio = (MeasurePower - rssi) / 20.00;
         Double distance = Math.pow(10, ratio);
         return distance;
-//        int MeasurePower = -69; //hard coded power value. Usually ranges between -59 to -65
+    }
+
 //        int rssi = bleDevice.getRssi();
-//        if(rssi > -65){
+//        if (rssi > -65) {
 //            double distance = 0.00;
 //            return distance;
 //        } else if (rssi > -70 && rssi <= -65) {
 //            double distance = 1.00;
 //            return distance;
-//        } else if (rssi > -74 && rssi <= -70) {
+//        } else if (rssi > -73 && rssi <= -72) {
 //            double distance = 2.00;
 //            return distance;
-//        }else if (rssi > -77 && rssi <= -74) {
+//        } else if (rssi > -77 && rssi <= -73) {
 //            double distance = 3.00;
 //            return distance;
-//        }else if (rssi > -80 && rssi <= -77) {
+//        } else if (rssi > -80 && rssi <= -77) {
 //            double distance = 4.00;
 //            return distance;
-//        }else if (rssi > -83 && rssi <= -80) {
+//        } else if (rssi > -83 && rssi <= -80) {
 //            double distance = 5.00;
 //            return distance;
-//        }else if (rssi > -87 && rssi <= 83) {
+//        } else if (rssi > -87 && rssi <= 83) {
 //            double distance = 6.00;
 //            return distance;
-//        }else {
+//        } else {
 //            double distance = 7.00;
 //            return distance;
 //        }
-    }
+//    }
 
 
     private void noti(String noti_text){
